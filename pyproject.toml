@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stripe-tax-report-ca"
+version = "0.1.0"
+description = "Canadian sales tax (GST/HST/PST/QST) report from Stripe Dashboard CSV exports: collected vs expected, refunds, fees and an ITC hint. No API keys, no network."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Marvin Palencia"}]
+keywords = ["stripe", "gst", "hst", "pst", "qst", "canada", "sales-tax", "csv", "report"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Office/Business :: Financial :: Accounting",
+]
+dependencies = [
+    "canada-sales-tax @ git+https://github.com/dreadmoreeee/canada-sales-tax",
+    # zoneinfo needs the IANA database; Windows has none built in
+    "tzdata; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+stripe-tax-report-ca = "stripe_tax_report_ca.cli:main"
+
+[tool.setuptools]
+packages = ["stripe_tax_report_ca"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

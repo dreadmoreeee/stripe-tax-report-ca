@@ -1,0 +1,28 @@
+# Example CI job (copy it into your own repository's workflow folder).
+# It builds the quarterly report from the Stripe exports you keep in exports/ and
+# fails the build when a sale is flagged as under-collected. Adjust the paths.
+name: stripe-tax-report
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 12 1 1,4,7,10 *"   # first day of each quarter
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ./stripe-tax-report-ca
+      - name: Build the report
+        run: >
+          stripe-tax-report-ca exports/*.csv --period quarter --merchant-province NB
+          --tz America/Moncton --format markdown -o tax-report.md
+          --fail-on-under-collected
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tax-report
+          path: tax-report.md
